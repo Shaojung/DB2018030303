@@ -6,6 +6,15 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
+
 public class MainActivity extends AppCompatActivity {
     TextView tv;
     @Override
@@ -14,24 +23,39 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         tv = findViewById(R.id.textView);
         MyTask task = new MyTask();
-        task.execute(10);
+        task.execute("https://www.mobile01.com/rss/news.xml");
     }
-    class MyTask extends AsyncTask<Integer, Integer, String>
+    class MyTask extends AsyncTask<String, Integer, String>
     {
         @Override
-        protected String doInBackground(Integer... params) {
-            int i;
-            for (i=1;i<=params[0];i++)
-            {
-                try {
-                    Thread.sleep(500);
-                    // Log.d("TASK", "R:" + i);
-                    publishProgress(i);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+        protected String doInBackground(String... params) {
+            String str_url = params[0];
+            URL url;
+            String str;
+            StringBuilder sb = new StringBuilder();
+            try {
+                url = new URL(str_url);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                conn.connect();
+                InputStream stream = conn.getInputStream();
+                BufferedReader br = new BufferedReader(new InputStreamReader(stream));
+                while ((str = br.readLine()) != null)
+                {
+                    sb.append(str);
                 }
+                br.close();
+                stream.close();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (ProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            return "Okay";
+            String data = sb.toString();
+            Log.d("NET", data);
+            return data;
         }
         @Override
         protected void onProgressUpdate(Integer... values) {
