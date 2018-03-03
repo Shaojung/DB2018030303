@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
@@ -22,23 +23,26 @@ import java.net.URL;
 public class MainActivity extends AppCompatActivity {
     TextView tv2;
     ImageView img;
+    ProgressBar pb;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         img = findViewById(R.id.imageView);
         tv2 = findViewById(R.id.textView2);
+        pb = findViewById(R.id.progressBar);
         MyTask task = new MyTask();
         task.execute("https://static1.squarespace.com/static/523b823ce4b0c90f4f169867/t/584f4d00e3df2821594ce4a6/1481592081752/");
     }
     class MyTask extends AsyncTask<String, Integer, Bitmap>
     {
+        int totalLength;
         @Override
         protected Bitmap doInBackground(String... params) {
             String str_url = params[0];
             URL url;
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            int totalLength;
+
             int sum = 0;
             try {
                 url = new URL(str_url);
@@ -47,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
                 conn.connect();
                 totalLength = conn.getContentLength();
                 InputStream is = conn.getInputStream();
-                byte[] b = new byte[1024];
+                byte[] b = new byte[128];
                 int len;
                 while ((len = is.read(b)) != -1)
                 {
@@ -73,7 +77,8 @@ public class MainActivity extends AppCompatActivity {
         protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
             Log.d("TASK", "progress:" + values[0]);
-            tv2.setText(String.valueOf(values[0]));
+            tv2.setText(String.valueOf(values[0]) + "/" + totalLength);
+            pb.setProgress(100 * values[0] / totalLength);
         }
 
         @Override
