@@ -12,14 +12,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         MyTask task = new MyTask();
-        task.execute(5);
+        task.execute(10);
     }
     class MyTask extends AsyncTask<Integer, Integer, String>
     {
         @Override
-        protected String doInBackground(Integer... integers) {
+        protected String doInBackground(Integer... params) {
             int i;
-            for (i=1;i<=5;i++)
+            for (i=1;i<=params[0];i++)
             {
                 try {
                     Thread.sleep(500);
