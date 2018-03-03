@@ -1,9 +1,12 @@
 package com.example.student.db2018030303;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
@@ -17,29 +20,29 @@ import java.net.ProtocolException;
 import java.net.URL;
 
 public class MainActivity extends AppCompatActivity {
-    TextView tv;
+
+    ImageView img;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        tv = findViewById(R.id.textView);
+        img = findViewById(R.id.imageView);
         MyTask task = new MyTask();
-        task.execute("https://www.mobile01.com/rss/news.xml");
+        task.execute("https://static1.squarespace.com/static/523b823ce4b0c90f4f169867/t/584f4d00e3df2821594ce4a6/1481592081752/");
     }
-    class MyTask extends AsyncTask<String, Integer, String>
+    class MyTask extends AsyncTask<String, Integer, Bitmap>
     {
         @Override
-        protected String doInBackground(String... params) {
+        protected Bitmap doInBackground(String... params) {
             String str_url = params[0];
             URL url;
-            String str = "";
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
             try {
                 url = new URL(str_url);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
                 conn.connect();
                 InputStream is = conn.getInputStream();
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
                 byte[] b = new byte[1024];
                 int len;
                 while ((len = is.read(b)) != -1)
@@ -48,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 is.close();
-                str = new String(bos.toByteArray());
+
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             } catch (ProtocolException e) {
@@ -56,21 +59,19 @@ public class MainActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            Log.d("NET", str);
-            return str;
+            Bitmap bmp = BitmapFactory.decodeByteArray(bos.toByteArray(), 0, bos.size());
+            return bmp;
         }
         @Override
         protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
             Log.d("TASK", "progress:" + values[0]);
-            tv.setText(String.valueOf(values[0]));
         }
 
         @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-            Log.d("TASK", "post:" + s);
-            tv.setText(s);
+        protected void onPostExecute(Bitmap bitmap) {
+            super.onPostExecute(bitmap);
+            img.setImageBitmap(bitmap);
         }
     }
 }
