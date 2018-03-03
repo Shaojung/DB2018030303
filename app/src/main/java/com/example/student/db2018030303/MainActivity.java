@@ -7,6 +7,7 @@ import android.util.Log;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -31,21 +32,19 @@ public class MainActivity extends AppCompatActivity {
         protected String doInBackground(String... params) {
             String str_url = params[0];
             URL url;
-            String str;
-            StringBuilder sb = new StringBuilder();
+            String str = "";
             try {
                 url = new URL(str_url);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
                 conn.connect();
-                InputStream stream = conn.getInputStream();
-                BufferedReader br = new BufferedReader(new InputStreamReader(stream));
-                while ((str = br.readLine()) != null)
-                {
-                    sb.append(str);
-                }
-                br.close();
-                stream.close();
+                InputStream is = conn.getInputStream();
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                byte[] b = new byte[1024];
+                is.read(b);
+
+                is.close();
+                str = new String(b);
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             } catch (ProtocolException e) {
@@ -53,9 +52,8 @@ public class MainActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            String data = sb.toString();
-            Log.d("NET", data);
-            return data;
+            Log.d("NET", str);
+            return str;
         }
         @Override
         protected void onProgressUpdate(Integer... values) {
