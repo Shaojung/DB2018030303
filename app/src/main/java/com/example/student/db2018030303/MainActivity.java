@@ -4,13 +4,15 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
-
+    TextView tv;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        tv = findViewById(R.id.textView);
         MyTask task = new MyTask();
         task.execute(10);
     }
@@ -31,17 +33,18 @@ public class MainActivity extends AppCompatActivity {
             }
             return "Okay";
         }
-
         @Override
         protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
             Log.d("TASK", "progress:" + values[0]);
+            tv.setText(String.valueOf(values[0]));
         }
 
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             Log.d("TASK", "post:" + s);
+            tv.setText(s);
         }
     }
 }
