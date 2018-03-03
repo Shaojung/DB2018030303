@@ -41,10 +41,14 @@ public class MainActivity extends AppCompatActivity {
                 InputStream is = conn.getInputStream();
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
                 byte[] b = new byte[1024];
-                is.read(b);
+                int len;
+                while ((len = is.read(b)) != -1)
+                {
+                    bos.write(b, 0, len);
+                }
 
                 is.close();
-                str = new String(b);
+                str = new String(bos.toByteArray());
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             } catch (ProtocolException e) {
