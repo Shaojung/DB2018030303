@@ -37,11 +37,13 @@ public class MainActivity extends AppCompatActivity {
             String str_url = params[0];
             URL url;
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            int totalLength;
             try {
                 url = new URL(str_url);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
                 conn.connect();
+                totalLength = conn.getContentLength();
                 InputStream is = conn.getInputStream();
                 byte[] b = new byte[1024];
                 int len;
