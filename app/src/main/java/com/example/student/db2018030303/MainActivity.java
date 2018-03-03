@@ -23,12 +23,25 @@ public class MainActivity extends AppCompatActivity {
             {
                 try {
                     Thread.sleep(500);
-                    Log.d("TASK", "R:" + i);
+                    // Log.d("TASK", "R:" + i);
+                    publishProgress(i);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
-            return null;
+            return "Okay";
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            Log.d("TASK", "progress:" + values[0]);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            Log.d("TASK", "post:" + s);
         }
     }
 }
