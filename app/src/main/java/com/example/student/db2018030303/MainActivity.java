@@ -20,13 +20,14 @@ import java.net.ProtocolException;
 import java.net.URL;
 
 public class MainActivity extends AppCompatActivity {
-
+    TextView tv2;
     ImageView img;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         img = findViewById(R.id.imageView);
+        tv2 = findViewById(R.id.textView2);
         MyTask task = new MyTask();
         task.execute("https://static1.squarespace.com/static/523b823ce4b0c90f4f169867/t/584f4d00e3df2821594ce4a6/1481592081752/");
     }
@@ -38,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
             URL url;
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             int totalLength;
+            int sum = 0;
             try {
                 url = new URL(str_url);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -49,7 +51,10 @@ public class MainActivity extends AppCompatActivity {
                 int len;
                 while ((len = is.read(b)) != -1)
                 {
+                    sum += len;
+                    publishProgress(sum);
                     bos.write(b, 0, len);
+
                 }
 
                 is.close();
@@ -68,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
             Log.d("TASK", "progress:" + values[0]);
+            tv2.setText(String.valueOf(values[0]));
         }
 
         @Override
